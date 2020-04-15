@@ -42,18 +42,19 @@
 		altura: 50,
 		largura: 50,
 		cor: "#ff4e4e",
-		gravidade: 1.5,
+		gravidade: 1.4,
 		velocidade: 0,
-		forcaDoPulo: 15,
+		forcaDoPulo: 20,
 		qntPulos: 0,
 
 		atualiza: function(){
 			this.velocidade += this.gravidade;
 			this.y += this.velocidade;
 			
-			if (this.y > chao.y - this.altura){
+			if (this.y > chao.y - this.altura && estadoAtual != estados.perdeu){
 				this.y = chao.y - this.altura;
 				this.qntPulos = 0;
+				this.velocidade = 0;
 			}
 		},
 
@@ -96,6 +97,10 @@
 				var obs = this._obs[i];
 
 				obs.x -= velocidade;
+				//Cria o atrito entre o objeto e obstáculo
+				if (bloco.x < obs.x + obs.largura && bloco.x + bloco.largura >= obs.x && bloco.y + bloco.altura >= chao.y - obs.altura) {
+					estadoAtual = estados.perdeu;					
+				}
 
 				if (obs.x <= -obs.largura){
 					this._obs.splice(i, 1);
@@ -103,6 +108,10 @@
 					i--;
 				}
 			}
+		},
+
+		limpa: function(){
+			this._obs = [];
 		},
 
 		desenha: function(){
@@ -122,8 +131,10 @@
 			estadoAtual = estados.jogando;
 		}
 		
-		else if (estadoAtual = estados.perdeu){
+		else if (estadoAtual = estados.perdeu && bloco.y >= 2 * ALTURA){
 			estadoAtual = estados.jogar;
+			bloco.velocidade = 0;
+			bloco.y = 0;
 		}
 	}
 
@@ -163,7 +174,10 @@
 		bloco.atualiza();
 
 		if (estadoAtual == estados.jogando)					
-			obstaculos.atualiza();			
+			obstaculos.atualiza();	
+
+		else if (estadoAtual == estados.perdeu)
+			obstaculos.limpa();
 	}
 	
 	function desenha() {
