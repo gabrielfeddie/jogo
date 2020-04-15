@@ -17,7 +17,13 @@
 	<body>
 	<script> 
 	//variáveis do jogo
-	var canvas, ctx, ALTURA, LARGURA, frames = 0, maxPulos = 3, velocidade = 6,
+	var canvas, ctx, ALTURA, LARGURA, frames = 0, maxPulos = 3, velocidade = 6, estadoAtual,
+
+	estados = {
+		jogar: 0,
+		jogando: 1,
+		perdeu: 2
+	},
 	
 	chao = {
 		y: 550,
@@ -109,10 +115,19 @@
 	};
 
 	function clique(event) {
-		bloco.pula();
+		if (estadoAtual == estados.jogando)
+			bloco.pula();
+		
+		else if (estadoAtual == estados.jogar) {
+			estadoAtual = estados.jogando;
+		}
+		
+		else if (estadoAtual = estados.perdeu){
+			estadoAtual = estados.jogar;
+		}
 	}
 
-	function main() {
+	function main() { //função principal
 		ALTURA = window.innerHeight;
 		LARGURA = window.innerWidth;
 
@@ -131,6 +146,7 @@
 
 		document.addEventListener("mousedown", clique);
 
+		estadoAtual = estados.jogar;
 		roda();
 	}
 	
@@ -145,15 +161,29 @@
 		frames++;
 
 		bloco.atualiza();
-		obstaculos.atualiza();
+
+		if (estadoAtual == estados.jogando)					
+			obstaculos.atualiza();			
 	}
 	
 	function desenha() {
-		ctx.fillStyle = "#074a7e"; //céu cor
+		ctx.fillStyle = "#074a7e"; 						//Cor céu
 		ctx.fillRect(0, 0, LARGURA, ALTURA);
 
-		chao.desenha();
-		obstaculos.desenha();
+		if (estadoAtual == estados.jogar) {    			//Desenha o botão de iniciar
+			ctx.fillStyle = "green";
+			ctx.fillRect(LARGURA / 2 - 50, ALTURA / 2 - 50, 100, 100);
+		}
+
+		else if (estadoAtual == estados.perdeu) {		//Desenha o botão de perdeu
+			ctx.fillStyle = "red";
+			ctx.fillRect(LARGURA / 2 - 50, ALTURA / 2 - 50, 100, 100);
+		}
+
+		else if (estadoAtual == estados.jogando)
+			obstaculos.desenha();
+		
+		chao.desenha();		
 		bloco.desenha();
 	}
 
